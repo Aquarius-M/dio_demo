@@ -1,12 +1,19 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_demo/utils/http/apis.dart';
-import 'package:dio_demo/utils/http/result_handle.dart';
+import 'package:dio_demo/utils/dio_utils/apis.dart';
+import 'package:dio_demo/utils/dio_utils/result_handle.dart';
+import 'package:flutter/foundation.dart';
 import 'package:format_dio_logger/format_dio_logger.dart';
 
 import 'intercept.dart';
 
+// 枚举请求类型
+enum DioMethod { get, post, put, patch, delete, head }
+
 class DioUtil {
+  /// 请求的URL前缀
+  static String baseUrl = API.apiBaseUrl;
+
   /// 连接超时时间
   final Duration _connectTimeout = const Duration(seconds: 6);
 
@@ -14,11 +21,7 @@ class DioUtil {
   final Duration _receiveTimeout = const Duration(seconds: 6);
 
   /// 发送超时时间
-
   final Duration _sendTimeout = const Duration(seconds: 6);
-
-  /// 请求的URL前缀
-  static String baseUrl = API.apiBaseUrl;
 
   static DioUtil? _instance;
   static Dio _dio = Dio();
@@ -59,12 +62,13 @@ class DioUtil {
     _dio.interceptors.add(TokenInterceptor());
 
     /// 打印日志
-    _dio.interceptors.add(FormatDioLogger());
+    if (kDebugMode) {
+      _dio.interceptors.add(FormatDioLogger());
+    }
   }
 
   /// 请求类
-
-  Future<T> request<T>(
+  Future<dynamic> request<T>(
     String url, {
     DioMethod method = DioMethod.get,
     Map<String, dynamic>? params,
@@ -87,7 +91,11 @@ class DioUtil {
     // 没有网络
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
-      print("无网");
+      var netError = {
+        "code": ExceptionHandle.netError,
+        "mseeage": "没有网络了",
+      };
+      return BaseResponse.fromJson(netError, (json) => null);
     }
     try {
       Response response;
@@ -98,13 +106,16 @@ class DioUtil {
           options: options,
           onSendProgress: onSendProgress,
           onReceiveProgress: onReceiveProgress);
-      return response.data;
+      return BaseResponse.fromJson(response.data, (json) => null);
     } on DioError catch (e) {
       if (e.type == DioErrorType.unknown) {
-        print(e.message);
+        var jsonError = {
+          "code": ExceptionHandle.unknownError,
+          "mseeage": e.error,
+        };
+        return BaseResponse.fromJson(jsonError, (json) => null);
       }
-
-      rethrow;
+      // rethrow;
     }
   }
 
@@ -113,8 +124,3 @@ class DioUtil {
     token ?? _cancelToken.cancel("cancelled");
   }
 }
-
-enum DioMethod { get, post, put, patch, delete, head }
-
-typedef NetSuccessCallback<T> = Function(T code, T msg, T data);
-typedef NetErrorCallback<T> = Function(T code, T msg);

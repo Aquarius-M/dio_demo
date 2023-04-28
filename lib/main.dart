@@ -1,4 +1,4 @@
-import 'package:dio_demo/utils/http/dio_utils.dart';
+import 'package:dio_demo/utils/log_utils/app_log_utils.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -104,11 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _handleLogin() async {
-    DioUtil()
-        .request("api/v1/feed/recommend/list", method: DioMethod.post, data: {
-      "channel": "cn",
-    }).then((value) {
-      print(value);
-    });
+    AppLog.i(LogMsg("点击按钮", tag: "点击事件"));
   }
 }

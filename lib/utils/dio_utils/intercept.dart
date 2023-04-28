@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:dio_demo/utils/http/dio_utils.dart';
+import 'package:dio_demo/utils/dio_utils/dio_utils.dart';
 import 'package:logger/logger.dart';
 import 'apis.dart';
 import 'result_handle.dart';
@@ -8,10 +8,6 @@ var logger = Logger();
 // default token
 const String defaultToken = '';
 const String kRefreshTokenUrl = API.refreshToken;
-
-String getBaseUrl() {
-  return API.apiBaseUrl;
-}
 
 String getToken() {
   return "1";
@@ -25,7 +21,7 @@ String getRefreshToken() {
 
 void setRefreshToken(refreshToken) {}
 
-/// 统一添加身份验证请求头（根据项目自行处理）
+/// 统一添加身份验证请求头
 class AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
@@ -39,7 +35,7 @@ class AuthInterceptor extends Interceptor {
   }
 }
 
-/// 刷新Token（根据项目自行处理）
+/// 刷新Token
 class TokenInterceptor extends QueuedInterceptor {
   Dio? _tokenDio;
 
@@ -55,9 +51,6 @@ class TokenInterceptor extends QueuedInterceptor {
       if (res['code'] == ExceptionHandle.success) {
         return response.data;
       }
-      // if (response.statusCode == ExceptionHandle.success) {
-      //   return response.data;
-      // }
     } catch (e) {
       logger.d('---------- 刷新Token失败！----------');
     }
