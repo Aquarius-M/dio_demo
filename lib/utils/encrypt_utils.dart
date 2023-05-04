@@ -6,7 +6,9 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:flutter/services.dart';
 
 var _key = 'sdfg5468wwdfd542sd4asdf4sadfqd12';
 var _iv = '0000000000000000';
@@ -25,9 +27,11 @@ class EncryptUtils {
   }
 
   /// MD5 加密 32位小写
-  // static String encodeMd5(String plainText) {
-  //   return EncryptUtil.encodeMd5(plainText);
-  // }
+  static String encodeMd5(String plainText) {
+    Uint8List content = const Utf8Encoder().convert(plainText);
+    Digest digest = md5.convert(content);
+    return digest.toString();
+  }
 
   /// AES加密
   static aesEncrypt(plainText) {

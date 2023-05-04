@@ -33,7 +33,8 @@ dependencies:
     sdk: flutter
 
 
-  get_storage: ^2.1.1
+  device_info_plus: ^8.2.2
+  package_info_plus: ^3.1.2
 
   dio: ^5.1.1
   format_dio_logger:
@@ -45,8 +46,9 @@ dependencies:
   get_server: ^1.2.1
   path_provider: ^2.0.14
   url_launcher: ^6.1.10
-  device_info_plus: ^8.2.2
-  package_info_plus: ^3.1.2
+
+  # 加密
+  crypto: ^3.0.2
   encrypt: ^5.0.1
   permission_handler: ^10.2.0
   flutter_screenutil: ^5.7.0
